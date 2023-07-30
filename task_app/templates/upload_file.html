@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task managment</title>
+</head>
+
+<body>
+    <h1>Files</h1>
+    <input type="file" id="fileInput">
+    <button id="btn">Submet</button>
+
+    <h2>File List</h2>
+    <ul id="fileList"></ul>
+
+    <script>
+        const fileEndpoint = "{% url 'upload-file' 3 %}"
+        fileList = document.getElementById("fileList")
+        btn = document.getElementById("btn")
+        const fileInput = document.querySelector("#fileInput")
+
+        btn.addEventListener("click", createFile = async(event) => {
+            event.preventDefault()
+            console.log("ff")
+            console.log(fileInput)
+            let file = fileInput.files[0]
+            console.log(file)
+            let formData = new FormData()
+            formData.append("file", file)
+
+            let newFile = fetch(fileEndpoint, {
+                    method: "POST",
+                    body: formData
+                }).then(response => response.json)
+                .catch(error => console.log(error))
+            addToFileList(newFile)
+        });
+
+
+        const loadFile = async() => {
+            let fiels = await fetch(fileEndpoint)
+                .then(response => response.json())
+                .catch(error => console.log(error))
+            if (fiels) {
+                for (file of fiels) {
+                    addToFileList(file)
+                }
+            }
+
+        }
+        loadFile()
+        addToFileList = (file) => {
+            let a = document.createElement('a')
+            a.appendChild(document.createTextNode('File'))
+            let li = document.createElement('li')
+            li.appendChild(a)
+
+            fileList.appendChild(li)
+
+        }
+    </script>
+
+</body>
+
+</html>
